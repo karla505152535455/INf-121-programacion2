@@ -1,0 +1,311 @@
+//carla brisa jallasi quenta
+import java.util.*;
+class Persona {
+    private String nombre;
+    private int edad;
+    private float pesoPersona;
+    
+    public Persona(String nombre, int edad, float peso) {
+        this.nombre = nombre;
+        this.edad = edad;
+        this.pesoPersona = peso;
+    }
+    public String getNombre() {
+        return nombre;
+        }
+    public int getEdad() {
+        return edad;
+        }
+    public float getPesoPersona() {
+        return pesoPersona;
+        }
+}
+class Cabina {
+    private int nroCabina;
+    private Persona[] personasAbordo;
+    private int cantidadPersonas;
+    private float pesoActual;
+    
+    public Cabina(int nroCabina) {
+        this.nroCabina = nroCabina;
+        this.personasAbordo = new Persona[10];
+        this.cantidadPersonas = 0;
+        this.pesoActual = 0;
+    }
+    public boolean agregarPersona(Persona p) {
+        if (cantidadPersonas >= 10) {
+            System.out.println("no se puede " + nroCabina + " cabina llena");
+            return false;
+        }
+     if (pesoActual + p.getPesoPersona() > 850) {
+            System.out.println("numero de personqas exedido " + nroCabina);
+            return false;
+        }
+        
+        personasAbordo[cantidadPersonas] = p;
+        cantidadPersonas++;
+        pesoActual += p.getPesoPersona();
+        System.out.println("persona " + p.getNombre() + "agregada" + nroCabina);
+        return true;
+    }
+    public int getNroCabina() {
+        return nroCabina;
+    }
+    public int getCantidadPersonas() {
+        return cantidadPersonas; 
+    }
+    public float getPesoActual() {
+        return pesoActual;
+        }
+    public Persona[] getPersonasAbordo() {
+        return personasAbordo;
+        }
+    public boolean cumpleReglasAbordo() {
+        boolean cumple = cantidadPersonas <= 10 && pesoActual <= 850;
+        if (!cumple) {
+            System.out.println("Ccabina " + nroCabina + " no cumple " + 
+                             cantidadPersonas + " personas, " + pesoActual + " kg");
+        }
+        return cumple;
+    }
+    public float calcularIngresosCabina() {
+        float ingresos = 0;
+        for (int i = 0; i < cantidadPersonas; i++) {
+            if (personasAbordo[i].getEdad() <= 25 || personasAbordo[i].getEdad() > 60) {
+                ingresos += 1.5;
+            } else {
+                ingresos += 3;
+            }
+        }
+        return ingresos;
+    }
+    public float calcularIngresosRegular() {
+        float ingresos = 0;
+        for (int i = 0; i < cantidadPersonas; i++) {
+            if (personasAbordo[i].getEdad() > 25 && personasAbordo[i].getEdad() <= 60) {
+                ingresos += 3;
+            }
+        }
+        return ingresos;
+    }
+}
+class Linea {
+    private String color;
+    private Persona[] filaPersonas;
+    private Cabina[] cabinas;
+    private int cantidadCabinas;
+    private int cantidadEnFila;
+    
+    public Linea(String color) {
+        this.color = color;
+        this.filaPersonas = new Persona[100];
+        this.cabinas = new Cabina[10];
+        this.cantidadCabinas = 0;
+        this.cantidadEnFila = 0;
+    }
+    
+    public void agregarPersona(Persona p) {
+        if (cantidadEnFila < filaPersonas.length) {
+            filaPersonas[cantidadEnFila] = p;
+            cantidadEnFila++;
+            System.out.println("Persona " + p.getNombre() + " agregada a fila de línea " + color);
+        }
+    }
+    
+    public void agregarCabina(Cabina cabina) {
+        if (cantidadCabinas < cabinas.length) {
+            cabinas[cantidadCabinas] = cabina;
+            cantidadCabinas++;
+            System.out.println("Cabina " + cabina.getNroCabina() + " agregada a línea " + color);
+        }
+    }
+
+    public boolean agregarPrimeraPersonaACabina(int nroCabina, Persona persona) {
+        for (int i = 0; i < cantidadCabinas; i++) {
+            if (cabinas[i].getNroCabina() == nroCabina) {
+                System.out.println("Intentando agregar a " + persona.getNombre() + 
+                                 " en cabina " + nroCabina + " de línea " + color);
+                return cabinas[i].agregarPersona(persona);
+            }
+        }
+        System.out.println("Cabina " + nroCabina + " no encontrada en línea " + color);
+        return false;
+    }
+    
+    public boolean verificarReglasCabinas() {
+        System.out.println("Verificando reglas en línea " + color + "...");
+        for (int i = 0; i < cantidadCabinas; i++) {
+            if (!cabinas[i].cumpleReglasAbordo()) {
+                return false;
+            }
+        }
+        System.out.println("Todas las cabinas de línea " + color + " cumplen las reglas");
+        return true;
+    }
+    
+    public float calcularIngresosLinea() {
+        float ingresos = 0;
+        for (int i = 0; i < cantidadCabinas; i++) {
+            ingresos += cabinas[i].calcularIngresosCabina();
+        }
+        return ingresos;
+    }
+    public float calcularIngresosRegular() {
+        float ingresos = 0;
+        for (int i = 0; i < cantidadCabinas; i++) {
+            ingresos += cabinas[i].calcularIngresosRegular();
+        }
+        return ingresos;
+    }
+    
+    public String getColor() { return color; }
+    public int getCantidadCabinas() { return cantidadCabinas; }
+    public Cabina[] getCabinas() { return cabinas; }
+}
+
+class MiTeleferico {
+    private Linea[] lineas;
+    private float cantidadIngresos;
+    private int cantidadLineas;
+    
+    public MiTeleferico() {
+        this.lineas = new Linea[3];
+        this.cantidadIngresos = 0;
+        this.cantidadLineas = 0;
+    }
+    
+    public void agregarLinea(Linea linea) {
+        if (cantidadLineas < lineas.length) {
+            lineas[cantidadLineas] = linea;
+            cantidadLineas++;
+            System.out.println("Línea " + linea.getColor() + " agregada al sistema");
+        }
+    }
+    
+    public boolean agregarPersonaFila(Persona p, String lineaColor) {
+        for (int i = 0; i < cantidadLineas; i++) {
+            if (lineas[i].getColor().equalsIgnoreCase(lineaColor)) {
+                lineas[i].agregarPersona(p);
+                return true;
+            }
+        }
+        System.out.println("Línea " + lineaColor + " no encontrada");
+        return false;
+    }
+    
+    public boolean agregarPrimeraPersonaACabina(String colorLinea, int nroCabina, Persona persona) {
+        for (int i = 0; i < cantidadLineas; i++) {
+            if (lineas[i].getColor().equalsIgnoreCase(colorLinea)) {
+                return lineas[i].agregarPrimeraPersonaACabina(nroCabina, persona);
+            }
+        }
+        System.out.println("Línea " + colorLinea + " no encontrada");
+        return false;
+    }
+    
+    public boolean verificarTodasLasCabinas() {
+        System.out.println("\n=== VERIFICANDO TODAS LAS CABINAS ===");
+        boolean todasCumplen = true;
+        for (int i = 0; i < cantidadLineas; i++) {
+            if (!lineas[i].verificarReglasCabinas()) {
+                todasCumplen = false;
+            }
+        }
+        return todasCumplen;
+    }
+    
+    public float calcularIngresoTotal() {
+        System.out.println("\n=== CALCULANDO INGRESOS TOTALES ");
+        float total = 0;
+        for (int i = 0; i < cantidadLineas; i++) {
+            float ingresoLinea = lineas[i].calcularIngresosLinea();
+            System.out.println("Línea " + lineas[i].getColor() + ": " + ingresoLinea + " bs");
+            total += ingresoLinea;
+        }
+        cantidadIngresos = total;
+        System.out.println("INGRESO TOTAL DEL SISTEMA: " + total + " bs");
+        return total;
+    }
+    
+    public void mostrarLineaConMasIngresoRegular() {
+        System.out.println("\n=== LÍNEA CON MÁS INGRESO REGULAR ===");
+        float maxIngreso = -1;
+        Linea lineaMax = null;
+        
+        for (int i = 0; i < cantidadLineas; i++) {
+            float ingresoRegular = lineas[i].calcularIngresosRegular();
+            System.out.println("Línea " + lineas[i].getColor() + 
+                             " - Ingreso regular: " + ingresoRegular + " bs");
+            if (ingresoRegular > maxIngreso) {
+                maxIngreso = ingresoRegular;
+                lineaMax = lineas[i];
+            }
+        }
+        
+        if (lineaMax != null && maxIngreso > 0) {
+            System.out.println("LÍNEA GANADORA: " + lineaMax.getColor());
+            System.out.println("INGRESO REGULAR: " + maxIngreso + " bs");
+        } else {
+            System.out.println("No hay ingresos regulares ");
+        }
+    }
+    
+    public float getCantidadIngresos() { return cantidadIngresos; }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        System.out.println("=== SISTEMA MI TELEFÉRICO ===\n");
+        
+        MiTeleferico teleferico = new MiTeleferico();
+        
+        Linea lineaAmarilla = new Linea("Amarillo");
+        Linea lineaRoja = new Linea("Rojo");
+        Linea lineaVerde = new Linea("Verde");
+        
+        teleferico.agregarLinea(lineaAmarilla);
+        teleferico.agregarLinea(lineaRoja);
+        teleferico.agregarLinea(lineaVerde);
+        
+        Cabina cabinaA1 = new Cabina(1);
+        Cabina cabinaA2 = new Cabina(2);
+        Cabina cabinaR1 = new Cabina(1);
+        Cabina cabinaV1 = new Cabina(1);
+        
+        lineaAmarilla.agregarCabina(cabinaA1);
+        lineaAmarilla.agregarCabina(cabinaA2);
+        lineaRoja.agregarCabina(cabinaR1);
+        lineaVerde.agregarCabina(cabinaV1);
+        
+        Persona joven = new Persona("Carlos", 20, 68);      
+        Persona adulto = new Persona("Maria", 30, 72);      
+        Persona adulto2 = new Persona("Luis", 40, 80);      
+        Persona mayor = new Persona("Ana", 65, 65);         
+        Persona joven2 = new Persona("Pedro", 18, 70);      // 
+        System.out.println("\n=== AGREGANDO PERSONAS");
+        
+        teleferico.agregarPrimeraPersonaACabina("marillo", 1, joven);
+        teleferico.agregarPrimeraPersonaACabina("amarillo", 1, adulto);
+        teleferico.agregarPrimeraPersonaACabina("amarillo", 2, adulto2);
+        teleferico.agregarPrimeraPersonaACabina("rojo", 1, mayor);
+        teleferico.agregarPrimeraPersonaACabina("verde", 1, joven2);
+        
+        boolean cumplenReglas = teleferico.verificarTodasLasCabinas();
+        System.out.println("\n¿Todas las cabinas cumplen las reglas? " + 
+                          (cumplenReglas ? "✓ SÍ" : "✗ NO"));
+        
+        float ingresoTotal = teleferico.calcularIngresoTotal();
+        
+        teleferico.mostrarLineaConMasIngresoRegular();
+        
+        System.out.println("\n===LLENANDO CABINAS ");
+        for (int i = 1; i <= 5; i++) {
+            Persona p = new Persona("Persona" + i, 35, 60); 
+            teleferico.agregarPrimeraPersonaACabina("amarillo", 1, p);
+        }
+        
+        teleferico.verificarTodasLasCabinas();
+        teleferico.calcularIngresoTotal();
+        teleferico.mostrarLineaConMasIngresoRegular();
+    }
+}
